@@ -6,6 +6,7 @@ import {
   Delete,
   Body,
   Param,
+  NotFoundException,
 } from '@nestjs/common';
 import { BlogService } from './blog.service';
 import { CreateBlogDto, UpdateBlogDto } from './dto/blog.dto';
@@ -25,8 +26,12 @@ export class BlogController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: number) {
-    return this.blogService.findOne(id);
+  async findOne(@Param('id') id: number) {
+    const blog = await this.blogService.findOne(id);
+    if (!blog) {
+      throw new NotFoundException(`Blog with ID ${id} not found`);
+    }
+    return blog;
   }
 
   @Put(':id')
